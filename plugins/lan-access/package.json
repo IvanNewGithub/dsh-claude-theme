@@ -35,5 +35,8 @@
   "homepage": "https://github.com/aklnaaw/dsh-claude-theme#readme",
   "bugs": {
     "url": "https://github.com/aklnaaw/dsh-claude-theme/issues"
+  },
+  "dependencies": {
+    "uqr": "^0.1.3"
   }
 }

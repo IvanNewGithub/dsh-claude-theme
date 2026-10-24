@@ -48,3 +48,4 @@ dist/
 PLAN.local.md
 NOTES.local.md
 *.local.md
+node_modules/
