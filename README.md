@@ -9,56 +9,104 @@
 
 把 DSH Web GUI 换成 claude.ai 的样子：暖米色画布、衬线正文、珊瑚色强调。
 
-仓库里有五样东西，各装各的，互不影响：
+这个仓库里有六样东西，**按需安装，不需要全装**：
 
-| | 是什么 |
+| 想做什么 | 装什么 |
 | --- | --- |
-| **皮肤** `claude/` | 配色、字体、圆角。就是皮肤本体 |
-| **皮肤插件** `plugins/skin/` | 装载皮肤：不装皮肤中心也能用皮肤，并自动把皮肤装到位；同时提供 **Claude-X** 设置页 |
-| **Claude 插件** `brand-plugin/` | 品牌替换：侧栏的星芒标记和字标、首页问候语、浏览器标题和图标、加载动画 |
-| **Clawd 插件** `crab-plugin/` | 宠物：输入框上沿那只可以戳的像素蟹 |
-| **字体切换插件** `plugins/font-switcher/` | 小工具：换掉皮肤用的三组字体 |
+| 只想换配色、字体和界面细节 | 皮肤 `claude/`（走皮肤中心或 `plugins/skin/` 安装） |
+| 想换侧栏的 Claude 标记、名字、头像和加载动画 | `brand-plugin/` |
+| 想养一只会眨眼、会犯困的像素蟹 | `crab-plugin/` |
+| 想自己换三组字体 | `plugins/font-switcher/` |
+| 想在同一个 Wi-Fi 下用手机打开 DSH | `plugins/lan-access/`，详见[它的说明](plugins/lan-access/README.md) |
+| 不装皮肤中心，还想独立加载皮肤并打开 Claude-X 设置页 | `plugins/skin/` |
 
-### 它们之间
+**只装皮肤中心也能用，但不会有这些插件功能**：Claude 品牌标记、名字和头像、加载动画、字体切换、像素蟹。它们都在各自的插件里，不在皮肤的 CSS 里。
 
-五个各管各的，设置页不共用（皮肤和品牌外观在 **Claude-X**、蟹在 **Clawd**、字体在 **字体**）。有两条**共享**，都是同一个模式——**数据归品牌插件，UI 可以来自两个地方**：
+`plugins/lan-access/` 会修改 DSH 的监听配置，让同一网络里的设备能打开界面。**不需要手机访问的话，不要装它。**
 
-- **名字、副标题、头像**存在 `dsh-claude-brand.prefs` 里。侧栏底部的弹窗和 Claude-X 页都能改，改完两边同时更新。
-- **加载动画**（星芒 / 螃蟹 / 关闭）在同一个存储里，目前只在 Claude-X 页选。
-
-两个插件不能共享模块作用域，所以约定是：**localStorage 是共享状态，window 事件是共享通知**——谁写谁广播，谁显示谁监听。只装品牌插件时，它自己的弹窗就是唯一入口。
-
-字体切换插件跟着当前皮肤走。皮肤没装，它就没东西可换。
-
-装插件不装皮肤也好看，只是颜色跟官方主题走；装皮肤不装插件，星芒、加载动画和蟹都不出现，但配色、字体、问候语旁的像素星星都在。
-
-**为什么换品牌不做进皮肤里**：皮肤跑不了官方的钩子（见[已知限制](#已知限制)），换 logo 这种事只有插件做得了。
-
----
-
-## 效果预览
+## 长什么样
 
 ![](claude/preview/light.jpg)
 
 ![](claude/preview/dark.jpg)
 
-上图为真实运行界面的截图。亮色画布是暖米色，暗色画布是暖黑，都和设计值一致。
+这是实际运行界面的截图：亮色是暖米色，暗色是暖黑，不是简单的反色。
 
----
+## 装了以后能看到什么
 
-## 特性
+- **暖米色 / 暖黑两套画布**，正文和标题用 Newsreader 衬线体，按钮和菜单用 Inter，代码用 JetBrains Mono。
+- **自带四份字体**，不需要另外下载；中文走系统字体回退。
+- **侧栏可以换成 Claude 的标记和字标**，还能改名字、副标题和头像，默认显示 `moon`。
+- **加载动画三选一**：星芒（八种形态轮播）、敲键盘的像素蟹，或保留原来的鲸尾。默认星芒，在 **设置 → Claude-X** 里选。
+- **24 句问候语轮换**，第一句按时间问候，会带上你设的名字。
+- **像素蟹**会跟着鼠标看、会眨眼、会犯困，戳一下会说句话。它只在 `crab-plugin/` 里，皮肤本身不画第二只。
+- **其他插件的界面也会顺手统一一下**，不会突然冒出一块很跳的颜色。
 
-- **暖米色画布**：不再是默认的冷灰白。亮色暖米、暗色是 Claude 那种暖黑（不是纯黑）。
-- **衬线正文**：正文、标题、引用用衬线体（Newsreader），按钮菜单这类界面用无衬线（Inter），代码用等宽（JetBrains Mono）。中文自动回退到系统字体。
-- **Clawd 像素蟹**：Claude Code 那只小螃蟹，纯 CSS 画的，没有图片。在插件里：眼睛跟着鼠标转，闲着会眨眼，没人理它会犯困、蜷起来睡，戳一下会说句应景的话。皮肤只是给它留了位置。
-- **字体自带**：四个字体文件全部放在皮肤目录里，不请求任何外部资源。
-- **第三方插件也顺眼**：其他插件的界面会被捎带上一套中性化处理，跟着 Claude 的卡片风格走，不会五颜六色。
-- **可改的名字与头像**：侧栏底部有一行头像和名字，点开就地改。新装默认显示 `moon` 和内置头像，只存在这台浏览器里，不上传。
-- **可换的加载动画**：「深度求索中」旁边那个会动的图标，三选一——**星芒**（八种形态轮播，15.55 秒一轮）、**螃蟹**（敲键盘的像素蟹）、**关闭**（保留原来的蓝色鲸尾）。默认星芒。在 **设置 → Claude-X** 里选。
-- **问候语轮换**：24 句，每次打开页面换一句，第一句永远是时段问候。会带上你设的名字。
-- **切换即时生效**：用皮肤中心的话，切皮肤不用刷新页面；用独立插件的话，切完刷新一下就好。
+皮肤只管外观；换标记、头像、加载动画、像素蟹这些需要对应的插件。**皮肤和插件可以分开装**：只装皮肤，配色和字体照常工作；只装插件，也能用，只是颜色跟随官方主题。
 
----
+## 怎么装
+
+每种东西单独装，重启 DSH 后生效。**只有皮肤要先选一种安装方式，不要两种方式同时用。更推荐独立皮肤插件，功能更完整，也不用额外装一套皮肤中心。**
+
+### 一、皮肤
+
+**方式 A：皮肤中心。** 先装 `@linxin666/dsh-client-ui-skin-center`，在市场里搜 Claude 安装，再到 **设置 → 皮肤中心** 选中 Claude。不用手动拷贝，也不用重启。
+
+**方式 B：独立皮肤插件（推荐）。** 不需要皮肤中心：
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/skin
+```
+
+重启后在 **设置 → Claude-X** 选中 Claude。插件会自己把 `claude/` 复制到 `$DSH_HOME/skins/claude`，不用你手动搬文件；已经存在的文件不会被覆盖。
+
+### 二、Claude 品牌插件
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/brand-plugin
+```
+
+重启后侧栏会换成 Claude 的标记和字标，标签页标题、图标也会变。名字、头像和加载动画也能改。
+
+只装这个插件时，点侧栏底部那一行就能改名字和头像。再装 `plugins/skin/`，会多一个 **设置 → Claude-X** 页面，加载动画也在那里选。
+
+### 三、像素蟹
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/crab-plugin
+```
+
+重启后，输入框上沿会出现那只蟹，戳一下有反应。
+
+### 四、字体切换
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/font-switcher
+```
+
+重启后打开 **设置 → 字体**，把字体文件放进它显示的文件夹，再点「重新扫描」。可以按用途放进 `serif/`、`sans/`、`mono/` 子文件夹。
+
+字体文件要自备，仓库里只有皮肤自带的那四份。
+
+### 五、手机访问（可选）
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/lan-access
+```
+
+重启后点侧栏的「手机访问」，打开开关，再按提示重启一次。以后扫面板里的二维码就能在手机上打开 DSH。
+
+**二维码里的链接就是访问凭证**，不要分享给别人；只在可信的局域网里开。具体注意事项见 [`plugins/lan-access/README.md`](plugins/lan-access/README.md)。
+
+更细的安装、排错和回滚步骤见 [`INSTALL.md`](INSTALL.md)。**嫌麻烦的话，也可以把安装交给 DSH、Claude Code 或 Codex 来做。**
+
+## 这些东西怎么配合
+
+- 名字、副标题、头像存在 `dsh-claude-brand.prefs` 里。侧栏弹窗和 Claude-X 页改的是同一份数据，改完两边同步。
+- 加载动画也存在同一份设置里，目前在 Claude-X 页选择。
+- 两个插件不能直接共享模块，所以用 localStorage 存共享数据，用 window 事件通知对方刷新。
+- 字体切换插件只处理当前皮肤的字体；没装皮肤，它就没有可换的对象。
+- 皮肤为什么不做品牌替换：皮肤中心不执行本地皮肤的官方钩子，换 logo 只能由插件来做。详见下面的已知限制。
 
 ## 目录结构
 
@@ -83,6 +131,10 @@ dsh-claude-theme/
 │       ├── README.md
 │       ├── lib/index.js             #   扫描字体文件夹
 │       └── lib/client.js            #   设置页（字体）
+├── plugins/lan-access/              # 局域网访问插件（独立于皮肤）
+│   ├── README.md                    #   安装、使用与安全边界
+│   ├── lib/index.js                 #   监听配置、链接与二维码
+│   └── lib/client.js                #   手机访问面板
 ├── crab-plugin/                     # Clawd 插件
 │   ├── LICENSE                      #   MIT + Clawd 署名
 │   ├── README.md
@@ -103,81 +155,6 @@ dsh-claude-theme/
 
 `scripts/` 的用法见 [`scripts/README.md`](scripts/README.md)。
 
----
-
-## 安装
-
-每样东西各装各的，缺哪个都不影响另一个。**只有皮肤需要选一下装法。**
-
-### 一、皮肤
-
-**走皮肤中心**（二选一）：装好 `@linxin666/dsh-client-ui-skin-center`，在它的市场里搜 Claude 装上，然后开 **设置 → 皮肤中心** 点中 Claude。市场会自动装到 `$DSH_HOME/skins/`，不用手动拷贝。不用重启。
-
-**走独立插件**（二选一）：装 `plugins/skin/`，然后重启：
-
-```bash
-dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/skin
-```
-
-插件首次加载时会**自己**把仓库里的 `claude/` 拷进 `$DSH_HOME/skins/claude`，所以你什么都不用拷。重启后在 **设置 → Claude-X** 里点中 Claude 就行。
-
-（想手动放皮肤也可以：`cp -r claude "$HOME/.dsh/skins/claude"`。插件只补缺失的文件，不会覆盖已经在那儿的。）
-
-**两种别一起装**，会各送一遍同样的样式。
-
-#### 走皮肤中心的话，这些功能没有
-
-皮肤中心**只收 CSS，不收插件**，所以它那份 `claude/` 里一个 JS 都没有。下面这些是插件才做得到的，**走皮肤中心不会带上**：
-
-| 功能 | 在哪个插件 |
-| --- | --- |
-| 侧栏的星芒标记和「Claude」字标 | `brand-plugin` |
-| 名字、副标题、头像 | `brand-plugin` |
-| 关闭侧栏底部那行 | `brand-plugin` |
-| 「深度求索中」旁的加载动画（蟹 / 星芒 / 关闭） | `brand-plugin` |
-| 字体切换 | `plugins/font-switcher` |
-
-想要就再装两个——**只装 `brand-plugin` 也行**，改名和换头像走侧栏底部那一行的弹窗；再装上 `plugins/skin/` 会多出一个 **设置 → Claude-X** 页，上面那些开关都在里面：
-
-```bash
-dsh plugin --profile web add <仓库路径>/brand-plugin
-dsh plugin --profile web add <plugins 路径>/plugins/skin
-```
-
-### 二、Claude 插件（品牌替换）
-
-```bash
-dsh plugin --profile web add link:/path/to/dsh-claude-theme/brand-plugin
-```
-
-装完**重启一次 DSH**（插件是启动时加载的，改了就要重启）。侧栏的鲸鱼会变成星芒，字标变成 "Claude"，标签页标题和图标也跟着换。名字/副标题/头像的数据也是它的（编辑界面在皮肤插件的 Claude-X 页，见上）。
-
-**「深度求索中」旁边那个图标也归它管**，三选一：星芒（八种形态轮播）、螃蟹（敲键盘的像素蟹）、关闭（保留原来的蓝色鲸尾）。默认星芒。选择界面在 **设置 → Claude-X**（也就是装了皮肤插件才会有的那一页）。
-
-### 三、Clawd 插件（宠物）
-
-```bash
-dsh plugin --profile web add link:/path/to/dsh-claude-theme/crab-plugin
-```
-
-同样重启。输入框上沿会出现那只像素蟹，戳一下有反应。蟹只在插件里，皮肤不画蟹，所以不会出现两只。
-
-### 四、字体切换插件（小工具）
-
-```bash
-dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/font-switcher
-```
-
-同样重启。然后开 **设置 → 字体**，把字体文件丢进它显示的文件夹，回来点「重新扫描」。想标明用途就放进 `serif/`、`sans/`、`mono/` 子文件夹，或者写进文件名（认中文关键词）。
-
-字体文件要自备，仓库里只有皮肤自带那四份。
-
-每一步的详细排查和回滚见 [`INSTALL.md`](INSTALL.md)。
-
-### **嫌麻烦可以丢给dsh或者Claude Code和codex让他们装**
-
----
-
 ## 已知限制
 
 - **皮肤跑不了官方的钩子脚本。** 皮肤中心只放行从它市场里装来的皮肤，本地的直接拒绝。所以换 logo 这类事只能做成插件，做不成皮肤的一部分。
@@ -189,8 +166,6 @@ dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/font-switche
 - **皮肤不再自己画蟹。** 早期皮肤带过一只静态蟹，和插件蟹打架（两只蟹或没有蟹），后来删了。现在蟹只在插件里，只装皮肤的话输入框上沿没有蟹。
 - **皮肤只对选中的页面生效。** 样式都圈在皮肤自己的地盘里，换别的皮肤不会串味。两条安装路径都是这样。
 
----
-
 ## 许可与声明
 
 - 代码与 CSS：MIT，见 [`LICENSE`](LICENSE)。
@@ -199,8 +174,6 @@ dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/font-switche
 - **Clawd 的署名。** Clawd（Claude Code 的像素蟹吉祥物）属于 Anthropic。本仓的蟹是**纯 CSS**：由 `scripts/gen-crab.py` 从像素点阵数据生成，不含任何图片文件。点阵几何源自酒馆扩展 [claude-web](https://github.com/claudenoshujin/claude-web)，作者 **claudenoshujin**——原像素美术的功劳归该作者。本项目只复用几何数据，未从该仓库复制任何文件；选择器、动画、配色、摆放均为自写。
 - **星芒动画的版权。** 「加载动画」里的星形素材属于 Anthropic，此处按非官方粉丝复刻的用途引用。本项目与 Anthropic 无隶属或背书关系。
 - **Copernicus 和 StyreneB 未包含在内。** 这两个是 Anthropic 实际使用的字体，属于商业授权字体，不能分发。本项目用开源的 Newsreader（替代 Copernicus 的衬线角色）和 Inter（替代 StyreneB 的无衬线角色）作为替代品——形似但不等同。
-
----
 
 ## 致谢
 

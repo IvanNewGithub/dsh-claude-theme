@@ -9,68 +9,104 @@
 
 Makes the DSH Web GUI look like the claude.ai app: warm cream canvas, serif reading text, coral accent.
 
-The repo holds five things. Each installs on its own, and none of them gets in another's way:
+There are six things in this repository. **Install only what you want; you do not need all of them.**
 
-| | What it is |
+| What you want | What to install |
 | --- | --- |
-| **Skin** `claude/` | Colours, fonts, rounded corners. The skin itself. |
-| **Skin plugin** `plugins/skin/` | Loads the skin without the skin center; also provides the **Claude-X** settings page. |
-| **Claude plugin** `brand-plugin/` | The starburst mark and wordmark in the sidebar, the home-page greeting, the browser title and icon, the loading animation. |
-| **Clawd plugin** `crab-plugin/` | The pokeable pixel crab on the composer edge. |
-| **Font-switcher plugin** `plugins/font-switcher/` | Swaps out the three font groups the skin uses. |
+| Different colours, fonts and interface details | The `claude/` skin, through the skin center or `plugins/skin/` |
+| The Claude sidebar mark, display name, avatar and loading animation | `brand-plugin/` |
+| A pixel crab that blinks and gets sleepy | `crab-plugin/` |
+| Your own three font groups | `plugins/font-switcher/` |
+| Open DSH on your phone over the same Wi-Fi | `plugins/lan-access/`; see [its guide](plugins/lan-access/README.md) |
+| Load the skin without the skin center and get the Claude-X settings page | `plugins/skin/` |
 
-### Between them
+**The skin center alone is enough for the visual theme, but not for the plugin features**: the Claude branding, name and avatar, loading animation, font switching and pixel crab. Those live in their own plugins, not in the skin's CSS.
 
-Five things, each minding its own business: the settings pages are separate
-(skin and brand appearance on **Claude-X**, crab on **Clawd**, fonts on
-**Fonts**). Two things are **shared**, both the same shape — **the data belongs
-to the brand plugin, the UI can come from two places**:
+`plugins/lan-access/` changes DSH's listening configuration so other devices on your network can open the interface. **Do not install it if you do not need phone access.**
 
-- The **name, caption and avatar** live in `dsh-claude-brand.prefs`. The popover
-  at the foot of the sidebar and the Claude-X page both edit it, and a change in
-  one shows up in the other at once.
-- The **loading animation** (starburst / crab / off) is in that same record; it
-  is picked on the Claude-X page.
-
-Two plugins cannot share a module scope, so the arrangement is: **localStorage
-is the shared state, a window event is the shared notification** — whoever
-writes broadcasts, whoever displays listens. With only the brand plugin
-installed, its own popover is the only entry point.
-
-The font-switcher follows the current skin. No skin, nothing to swap.
-
-Plugins without the skin still look right, just in the stock theme colours. The
-skin without the plugins means no starburst, no loading animation and no crab,
-but the colours, fonts and the pixel sparkle by the greeting are all there.
-
-**Why the brand swap isn't part of the skin**: skins can't run the official
-hooks (see [Limitations](#limitations)), and swapping a logo is plugin work.
-
----
-
-## Preview
+## What it looks like
 
 ![](claude/preview/light.jpg)
 
 ![](claude/preview/dark.jpg)
 
-Screenshots of the real running UI. The light canvas is warm cream, the dark one Claude's warm black — both matching the design values.
+These are screenshots of the real interface: warm cream in light mode and warm black in dark mode, not a simple colour inversion.
 
----
+## What you get
 
-## Features
+- **Warm cream and warm black canvases**, with Newsreader for prose and headings, Inter for buttons and menus, and JetBrains Mono for code.
+- **Four font files included**, with system fonts as the Chinese fallback.
+- **Claude branding in the sidebar**, plus an editable display name, subtitle and avatar. New installs show `moon`.
+- **Three loading-animation choices**: the eight-shape starburst loop, a pixel crab at a keyboard, or the original whale tail. The default is starburst, selected in **Settings → Claude-X**.
+- **24 rotating greetings**, starting with a time-of-day greeting and using your chosen name.
+- **A pixel crab** that watches your pointer, blinks, gets sleepy and says something when poked. It only lives in `crab-plugin/`; the skin does not draw a second one.
+- **Other plugins get a more consistent look too**, so they do not introduce a loud, unrelated card style.
 
-- **Warm cream canvas** — no more stock cool gray-white. Light is warm cream; dark is Claude's warm black, not pure black.
-- **Serif reading text** — prose, headings and quotes in Newsreader; buttons and menus in Inter; code in JetBrains Mono. Chinese falls back to your system fonts.
-- **Clawd, the pixel crab** — Claude Code's crab, drawn in pure CSS, no images. It lives in the plugin: eyes following your pointer, blinking when idle, dozing off when ignored, and a poke gets you a line that fits the moment. The skin just reserves room for it.
-- **Fonts included** — four font files inside the skin directory; nothing is fetched from outside.
-- **Third-party plugins blend in** — other plugins' UI gets a neutral coat so it follows Claude's card style instead of clashing.
-- **Your name and avatar** — a row at the foot of the sidebar; click to edit in place. A fresh install shows `moon` and a built-in avatar, stored only in this browser.
-- **Swappable loading animation** — the icon beside "deep diving" has three choices: **starburst** (eight looping shapes, one 15.55s cycle), **crab** (the pixel crab at a keyboard), or **off** (keep the stock blue whale). Starburst by default, picked in **Settings → Claude-X**.
-- **Rotating greeting** — 24 lines, one per page load, the first always a time-of-day greeting, carrying your name.
-- **Live switching** — through the skin center, swapping skins needs no reload; through the standalone plugin, reload once after switching.
+The skin controls appearance; branding, avatar, loading animation and the crab need their respective plugins. **The skin and plugins work independently**: skin-only installs keep the colours and fonts; plugin-only installs work too, with the stock theme colours.
 
----
+## Install
+
+Install each piece separately and restart DSH. **Only the skin needs you to choose an installation route. Do not use both routes. The standalone skin plugin is recommended: it includes the complete settings page and does not require a separate skin center.**
+
+### 1. The skin
+
+**Option A: the skin center.** Install `@linxin666/dsh-client-ui-skin-center`, find Claude in its marketplace, then select it in **Settings → Skin Center**. No manual copying and no restart.
+
+**Option B: the standalone skin plugin (recommended).** No skin center required:
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/skin
+```
+
+After restarting, select Claude in **Settings → Claude-X**. The plugin copies `claude/` into `$DSH_HOME/skins/claude` itself. Existing files are not overwritten.
+
+### 2. The Claude brand plugin
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/brand-plugin
+```
+
+After restarting, the sidebar mark and wordmark become Claude's, and the browser title and icon change too. You can also edit the name, avatar and loading animation.
+
+With only this plugin, click the row at the bottom of the sidebar to edit the name and avatar. Adding `plugins/skin/` also gives you **Settings → Claude-X**, where the loading-animation choice lives.
+
+### 3. The pixel crab
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/crab-plugin
+```
+
+After restarting, the crab appears above the composer. Poke it for a reaction.
+
+### 4. Font switching
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/font-switcher
+```
+
+Restart, open **Settings → Fonts**, put your font files in the folder it shows, and click rescan. You can sort them into `serif/`, `sans/` and `mono/` subfolders.
+
+Bring your own fonts; the repository only includes the four used by the skin.
+
+### 5. Phone access (optional)
+
+```bash
+dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/lan-access
+```
+
+Restart, open **Phone access** in the sidebar, turn on the switch, and restart once more when prompted. After that, scan the QR code in the panel to open DSH on your phone.
+
+**The link in the QR code is an access credential.** Do not share it, and only enable LAN access on a network you trust. See [`plugins/lan-access/README.md`](plugins/lan-access/README.md) for the details.
+
+For more detailed installation, troubleshooting and rollback steps, see [`INSTALL.md`](INSTALL.md). **Too lazy? Hand the installation to DSH, Claude Code or Codex.**
+
+## How the pieces fit together
+
+- The display name, subtitle and avatar live in `dsh-claude-brand.prefs`. The sidebar popover and Claude-X edit the same record, so both stay in sync.
+- The loading-animation choice is stored in that same record and is currently selected on the Claude-X page.
+- The two plugins cannot share a module scope, so they use localStorage for shared data and a window event to notify each other.
+- The font switcher only works with the active skin; without a skin, it has nothing to change.
+- Brand replacement is not part of the skin because the skin center does not run official hooks from local skins. Logo changes have to be done by a plugin. See the limitations below.
 
 ## Layout
 
@@ -95,6 +131,10 @@ dsh-claude-theme/
 │       ├── README.md
 │       ├── lib/index.js             #   scans the font folder
 │       └── lib/client.js            #   the font settings page
+├── plugins/lan-access/              # LAN access plugin (independent of the skin)
+│   ├── README.md                    #   installation, usage and safety
+│   ├── lib/index.js                 #   listener configuration, links and QR code
+│   └── lib/client.js                #   the phone-access panel
 ├── crab-plugin/                     # the Clawd plugin
 │   ├── LICENSE                      #   MIT + Clawd attribution
 │   ├── README.md
@@ -115,85 +155,6 @@ dsh-claude-theme/
 
 Script usage is documented in [`scripts/README.md`](scripts/README.md).
 
----
-
-## Install
-
-The four things install on their own; missing one doesn't affect another. **Only the skin asks you to pick a route.**
-
-### 1. The skin
-
-**Through the skin center** (pick one): install `@linxin666/dsh-client-ui-skin-center`, search for Claude in its marketplace and install it, then open **Settings → Skin Center** and pick Claude. The marketplace puts it in `$DSH_HOME/skins/` for you. No restart.
-
-**Through the standalone plugin** (pick one): install `plugins/skin/`, then restart:
-
-```bash
-dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/skin
-```
-
-On first load the plugin copies the repository's `claude/` into `$DSH_HOME/skins/claude` itself, so there is nothing for you to copy. After the restart, pick Claude in **Settings → Claude-X**.
-
-(You can still place the skin by hand if you prefer: `cp -r claude "$HOME/.dsh/skins/claude"`. The plugin only fills in missing files — it never overwrites what is already there.)
-
-**Don't install both** — each would send the same stylesheet to the page.
-
-#### What the skin center does not give you
-
-The skin center **takes CSS only, no plugins**, so the copy it loads contains no
-JavaScript at all. Everything below needs a plugin and **will not be there if you
-install through the skin center**:
-
-| Feature | Needs |
-| --- | --- |
-| Sidebar starburst mark and "Claude" wordmark | `brand-plugin` |
-| Display name, subtitle, avatar | `brand-plugin` |
-| Turning the sidebar foot row off | `brand-plugin` |
-| The loading animation beside "deep diving" (crab / starburst / off) | `brand-plugin` |
-| Font switching | `plugins/font-switcher` |
-
-Install either or both: **`brand-plugin` on its own is enough** — renaming and the
-avatar live in the popover on the sidebar's bottom row. Adding `plugins/skin`
-also gives you the **Settings → Claude-X** page where every switch above lives.
-
-```bash
-dsh plugin --profile web add <path-to-repo>/brand-plugin
-dsh plugin --profile web add <path-to-repo>/plugins/skin
-```
-
-### 2. The Claude plugin
-
-```bash
-dsh plugin --profile web add link:/path/to/dsh-claude-theme/brand-plugin
-```
-
-**Restart DSH once** after installing (client plugins load at startup and can't hot-swap). The whale in the sidebar becomes a starburst, the wordmark reads "Claude", and the tab title and icon change with it.
-
-### 3. The Clawd plugin
-
-```bash
-dsh plugin --profile web add link:/path/to/dsh-claude-theme/crab-plugin
-```
-
-Restart the same way. The pixel crab appears on the composer edge, and poking it gets a reaction.
-
-The crab lives only in the plugin — the skin does not draw one, so you never get two.
-
-### 4. The font-switcher plugin
-
-```bash
-dsh plugin --profile web add link:/path/to/dsh-claude-theme/plugins/font-switcher
-```
-
-Restart the same way, then open **Settings → 字体** and drop your font files into the folder it shows you (`assets/fonts/custom/` inside the skin directory), and come back and hit "rescan". To label what each one is for, put them in `serif/`, `sans/` or `mono/` subfolders, or say so in the filename.
-
-Bring your own font files; the repo only has the four the skin ships with.
-
-Troubleshooting, verification and rollback for every step are in [`INSTALL.md`](INSTALL.md).
-
-**Too lazy? Hand it to dsh, Claude Code or codex and let them install it.**
-
----
-
 ## Limitations
 
 - **Skins can't run the official hooks.** The skin center only admits skins installed from its marketplace and refuses local ones outright. That's why swapping the logo is a plugin, not part of the skin.
@@ -205,17 +166,14 @@ Troubleshooting, verification and rollback for every step are in [`INSTALL.md`](
 - **The skin no longer draws its own crab.** It used to carry a static one that fought with the plugin's crab (two crabs, or none), so it was removed. The crab lives only in the plugin now — skin without plugin means no crab.
 - **The skin only applies while selected.** Everything is scoped inside the skin's own namespace, so other skins don't pick it up. Both install routes behave this way.
 
----
-
 ## License and notices
 
 - Code and CSS: MIT, see [`LICENSE`](LICENSE).
 - Vendored fonts: Newsreader, Inter and JetBrains Mono are licensed under the SIL Open Font License 1.1 and are included in `claude/assets/fonts/`.
 - Trademarks: this is an **unofficial fan tribute**. "Claude" and "Anthropic" are trademarks of Anthropic PBC. This project is not affiliated with or endorsed by Anthropic.
 - **Clawd attribution.** Clawd, the pixel crab mascot of Claude Code, belongs to Anthropic. The crab in this repo is **pure CSS**, generated by `scripts/gen-crab.py` from dot-matrix data with no image files. The geometry comes from the SillyTavern extension [claude-web](https://github.com/claudenoshujin/claude-web) by **claudenoshujin** — credit for the original pixel art belongs to that author. This project reuses the geometry only and copied no files from that repo; the selectors, animation, colours and placement are its own.
+- **Starburst artwork.** The star shapes used by the loading animation belong to Anthropic and are used here as an unofficial fan tribute. This project is not affiliated with or endorsed by Anthropic.
 - **Copernicus and StyreneB are not included.** Those are Anthropic's actual typefaces and are licensed fonts that cannot be redistributed. This project substitutes the open Newsreader (for Copernicus's serif role) and Inter (for StyreneB's sans role) — similar in spirit, not identical.
-
----
 
 ## Credits
 
