@@ -33,9 +33,9 @@
  * 1. Palette plumbing
  * ------------------------------------------------------------------------- */
 :root {
-  --cl-serif: 'Newsreader', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', Georgia, serif;
-  --cl-sans: 'Inter', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --cl-mono: 'JetBrains Mono', 'Noto Sans Mono CJK SC', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --cl-serif: 'anthropicSerif', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', Georgia, serif;
+  --cl-sans: 'anthropicSans', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --cl-mono: 'anthropicMono', 'Noto Sans Mono CJK SC', ui-monospace, SFMono-Regular, Menlo, monospace;
   --cl-coral: #d97757;
   --cl-coral-active: #a9583e;
   --cl-canvas: #faf9f5;
@@ -343,4 +343,15 @@ body[data-ds-dark-theme] {
 
 @media (prefers-reduced-motion: reduce) {
   [data-slot="conversation.hero.brand.mark"]::after { animation: none; }
+}
+
+/* ---------------------------------------------------------------------------
+ * 10. macOS ambient gradient — the app paints a blue-violet wash over the
+ *     translucent sidebar on darwin ([data-platform="darwin"] .sidebarCol),
+ *     which fights the warm palette. Under this skin the sidebar is opaque
+ *     Claude cream; the wallpaper tint is removed.
+ * ------------------------------------------------------------------------- */
+body [class*="sidebarCol"] {
+  background-image: none !important;
+  background-color: var(--dsw-specific-sidebar-fill) !important;
 }

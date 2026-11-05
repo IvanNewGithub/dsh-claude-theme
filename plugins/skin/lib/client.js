@@ -870,6 +870,19 @@ window.__ModuleLoader__.load({
 		}
 
 		function apply(ctx) {
+			/* The desktop Electron document never goes through webServer.tapIndex,
+			 * so html[data-dsh-skin] is never stamped there and the scoped skin
+			 * sheet stays inert. Stamp it from the renderer instead: eagerly to
+			 * the fallback id, then refined to whatever the host reports. */
+			var stampSkin = function (id) {
+				if (typeof id === "string" && id) {
+					document.documentElement.setAttribute("data-dsh-skin", id);
+				}
+			};
+			stampSkin("claude");
+			fetchSkins().then(function (data) {
+				if (data && typeof data.active === "string" && data.active) stampSkin(data.active);
+			});
 			ctx.effect(function () {
 				var el = document.createElement("style");
 				el.id = STYLE_ID;
