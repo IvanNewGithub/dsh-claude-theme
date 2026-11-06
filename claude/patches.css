@@ -33,9 +33,9 @@
  * 1. Palette plumbing
  * ------------------------------------------------------------------------- */
 :root {
-  --cl-serif: 'Newsreader', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', Georgia, serif;
-  --cl-sans: 'Inter', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --cl-mono: 'JetBrains Mono', 'Noto Sans Mono CJK SC', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --cl-serif: 'anthropicSerif', 'Noto Serif CJK SC', 'Source Han Serif SC', 'Songti SC', Georgia, serif;
+  --cl-sans: 'anthropicSans', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --cl-mono: 'anthropicMono', 'Noto Sans Mono CJK SC', ui-monospace, SFMono-Regular, Menlo, monospace;
   --cl-coral: #d97757;
   --cl-coral-active: #a9583e;
   --cl-canvas: #faf9f5;
@@ -343,4 +343,149 @@ body[data-ds-dark-theme] {
 
 @media (prefers-reduced-motion: reduce) {
   [data-slot="conversation.hero.brand.mark"]::after { animation: none; }
+}
+
+/* ---------------------------------------------------------------------------
+ * 10. macOS ambient gradient — the app paints a blue-violet wash over the
+ *     translucent sidebar on darwin ([data-platform="darwin"] .sidebarCol),
+ *     which fights the warm palette. Under this skin the sidebar is opaque
+ *     Claude cream; the wallpaper tint is removed.
+ * ------------------------------------------------------------------------- */
+body [class*="sidebarCol"] {
+  background-image: none !important;
+  background-color: var(--dsw-specific-sidebar-fill) !important;
+}
+
+/* Allow section header label in sidebar to use available width without being cut off at 45% */
+[data-sidebar-workspace-header] > span:first-child,
+[class*="sectionHeader"] > [class*="sectionLabel"] {
+  max-width: calc(100% - 96px) !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * 13. Composer model popover — the warm card
+ *
+ * Stock the card reads as a cold bluish-white sheet on the cream canvas and
+ * the search field carries a heavy coral border. The hooks here are all
+ * runtime attributes, verified against the installed bundle (no [class*=…]):
+ * ModelSelect stamps id="…-menu" on its MenuSurface; the material child reads
+ * --dsw-menu-surface-fill and pinned group headers read
+ * --dsw-alias-menu-group-header-fill; provider headings carry
+ * data-menu-group-heading inside data-menu-group sections; rows are
+ * role=menuitemradio (model/effort) or role=menuitem (root cells); the
+ * keyboard-highlighted row carries data-highlighted; the search input is the
+ * only role=searchbox inside a menu surface, wrapped in a bare span.
+ * ------------------------------------------------------------------------- */
+
+/* Card: cream fill with a hint of translucency for the material blur, a 12px
+ * radius, a real 1px hairline, and a layered soft shadow. The token rebinds
+ * live on the surface so the material, the sticky headers, and the scrollbar
+ * descendants all see the warm values. */
+[id$="-menu"][data-menu-material] {
+  padding: 6px;
+  border: 1px solid #1f1e1d1f; /* rgba(31, 30, 29, 0.12) */
+  border-radius: var(--cl-radius-lg);
+  box-shadow: 0 8px 24px #00000014, 0 2px 6px #0000000a;
+  --dsw-menu-surface-fill: #faf9f5f0;
+  --dsw-alias-menu-group-header-fill: #faf9f5f0;
+  --dsh-scrollbar-thumb: #1f1e1d2e; /* rgba(31, 30, 29, 0.18) */
+  --dsh-scrollbar-thumb-hover: #1f1e1d47;
+}
+
+/* Search field: quiet inset instead of the coral-bordered box; the terracotta
+ * ring only appears while the field is focused. */
+[id$="-menu"][data-menu-material] span:has(> [role="searchbox"]) {
+  height: auto;
+  padding: 7px 10px;
+  border: 1px solid #1f1e1d1a; /* rgba(31, 30, 29, 0.10) */
+  border-radius: var(--cl-radius-md);
+  background: #1f1e1d0a; /* rgba(31, 30, 29, 0.04) */
+}
+[id$="-menu"][data-menu-material] span:has(> [role="searchbox"]):focus-within {
+  border-color: #c96442;
+  box-shadow: 0 0 0 2px #c964422e; /* rgba(201, 100, 66, 0.18) */
+}
+[id$="-menu"][data-menu-material] [role="searchbox"] {
+  outline: none;
+}
+
+/* Provider group headers: compact subheaders with a hairline between groups. */
+[id$="-menu"][data-menu-material] [data-menu-group-heading] {
+  padding: 8px 10px 4px;
+  color: #87867f;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+[id$="-menu"][data-menu-material] [data-menu-group] + [data-menu-group] {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid #1f1e1d0f; /* rgba(31, 30, 29, 0.06) */
+}
+
+/* Rows: 8px radius, compact padding, warm beige-grey hover/active instead of
+ * the cold grey slab. */
+[id$="-menu"][data-menu-material] :is([role="menuitemradio"], [role="menuitem"]) {
+  min-height: 0;
+  padding: 7px 10px;
+  border-radius: var(--cl-radius-md);
+  transition: background-color 0.12s ease;
+}
+[id$="-menu"][data-menu-material] :is([role="menuitemradio"], [role="menuitem"]):focus-visible,
+[id$="-menu"][data-menu-material] :is([role="menuitemradio"], [role="menuitem"])[data-highlighted] {
+  background: #1f1e1d0f; /* rgba(31, 30, 29, 0.06) */
+}
+@media (hover: hover) {
+  [id$="-menu"][data-menu-material] :is([role="menuitemradio"], [role="menuitem"]):hover:not(:disabled) {
+    background: #1f1e1d0f;
+  }
+}
+
+/* Row label: 13.5px; the checked model keeps its marker to the trailing
+ * terracotta check and a medium label weight — optionCopy is the row's first
+ * span, the name sits one level inside it. */
+[id$="-menu"][data-menu-material] [role="menuitemradio"] > span:first-child > span {
+  font-size: 13.5px;
+}
+[id$="-menu"][data-menu-material] [role="menuitemradio"][aria-checked="true"] > span:first-child > span {
+  font-weight: 500;
+}
+[id$="-menu"][data-menu-material] [role="menuitemradio"][aria-checked="true"] > span:last-child {
+  color: #c96442;
+}
+
+/* Dark: the warm-black analogues of every light value above. */
+body[data-ds-dark-theme] [id$="-menu"][data-menu-material] {
+  border-color: #ffffff1f;
+  box-shadow: 0 8px 24px #00000066, 0 2px 6px #00000047;
+  --dsw-menu-surface-fill: #252320f0;
+  --dsw-alias-menu-group-header-fill: #252320f0;
+  --dsh-scrollbar-thumb: #faf9f52e;
+  --dsh-scrollbar-thumb-hover: #faf9f547;
+}
+body[data-ds-dark-theme] [id$="-menu"][data-menu-material] span:has(> [role="searchbox"]) {
+  border-color: #ffffff24;
+  background: #faf9f50a;
+}
+body[data-ds-dark-theme] [id$="-menu"][data-menu-material] span:has(> [role="searchbox"]):focus-within {
+  border-color: var(--cl-coral);
+  box-shadow: 0 0 0 2px #e08a6a2e;
+}
+body[data-ds-dark-theme] [id$="-menu"][data-menu-material] [data-menu-group-heading] {
+  color: #a5a29a;
+}
+body[data-ds-dark-theme] [id$="-menu"][data-menu-material] [data-menu-group] + [data-menu-group] {
+  border-top-color: #ffffff12;
+}
+body[data-ds-dark-theme] [id$="-menu"][data-menu-material] :is([role="menuitemradio"], [role="menuitem"]):focus-visible,
+body[data-ds-dark-theme] [id$="-menu"][data-menu-material] :is([role="menuitemradio"], [role="menuitem"])[data-highlighted] {
+  background: #faf9f50f;
+}
+@media (hover: hover) {
+  body[data-ds-dark-theme] [id$="-menu"][data-menu-material] :is([role="menuitemradio"], [role="menuitem"]):hover:not(:disabled) {
+    background: #faf9f50f;
+  }
+}
+body[data-ds-dark-theme] [id$="-menu"][data-menu-material] [role="menuitemradio"][aria-checked="true"] > span:last-child {
+  color: var(--cl-coral);
 }
